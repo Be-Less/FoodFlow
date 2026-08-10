@@ -15,6 +15,11 @@ const foodSchema = new mongoose.Schema({
         type: String,
         required: [true, "Please provide a food description"]
     },
+    restaurant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Restaurant",
+        required: [true, "Please provide a restaurant"]
+    },
     price: {
         type: Number,
         required: [true, "Please provide a food price"]

@@ -193,7 +193,61 @@ const orderFoodController = async (req, res) => {
     }
 };
 
+const validStatuses = [
+  "pending",
+  "accepted",
+  "preparing",
+  "on the way",
+  "delivered",
+  "cancelled"
+];
+
+const updateOrderStatusController = async (req, res) => {
+  try {
+    const { orderId, status } = req.body;
+
+    if (!orderId || !status) {
+      return res.status(400).json({
+        success: false,
+        message: "orderId and status are required"
+      });
+    }
+
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status value"
+      });
+    }
+
+    const order = await orderModel.findByIdAndUpdate(
+      orderId,
+      { status },
+      { new: true, runValidators: true, context: "query" }
+    );
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Order status updated successfully",
+      order
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
+  }
+};
+
 module.exports = 
 { createFoodController, 
     getAllFoodsController, 
-    updateFoodController, deleteFoodController, orderFoodController };
+    updateFoodController, deleteFoodController, orderFoodController, updateOrderStatusController };
