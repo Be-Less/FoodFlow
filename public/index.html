@@ -56,17 +56,38 @@
           <div id="adminSection" class="hidden">
             <h2>Admin Panel</h2>
             <div class="tabs">
-              <button type="button" class="tab active" data-admin-view="restaurant">Create Restaurant</button>
+              <button type="button" class="tab active" data-admin-view="category">Create Category</button>
+              <button type="button" class="tab" data-admin-view="restaurant">Create Restaurant</button>
               <button type="button" class="tab" data-admin-view="food">Create Food</button>
             </div>
+
+            <form id="categoryForm" class="auth-form">
+              <h3>Add Category</h3>
+              <input type="text" id="categoryTitle" placeholder="Category Title" required />
+              <input type="text" id="categoryImage" placeholder="Category Image URL" required />
+              <button type="submit">Create Category</button>
+            </form>
 
             <form id="restaurantForm" class="auth-form">
               <h3>Add Restaurant</h3>
               <input type="text" id="restTitle" placeholder="Restaurant Title" required />
               <input type="text" id="restAddress" placeholder="Address" required />
-              <input type="text" id="restFoodType" placeholder="Food Type (e.g., Italian)" required />
-              <input type="text" id="restImageUrl" placeholder="Image URL" />
-              <input type="number" id="restDeliveryTime" placeholder="Delivery Time (minutes)" />
+              <input type="text" id="restImage" placeholder="Image URL" required />
+              <select id="restFoodType" required>
+                <option value="">Select Food Type</option>
+                <option value="veg">Vegetarian</option>
+                <option value="non-veg">Non-Vegetarian</option>
+                <option value="both">Both</option>
+              </select>
+              <select id="restTime" required>
+                <option value="">Select Operating Hours</option>
+                <option value="10:00 AM - 10:00 PM">10:00 AM - 10:00 PM</option>
+                <option value="11:00 AM - 11:00 PM">11:00 AM - 11:00 PM</option>
+                <option value="12:00 PM - 12:00 AM">12:00 PM - 12:00 AM</option>
+              </select>
+              <input type="number" id="restDeliveryTime" placeholder="Delivery Time (e.g., 30)" required />
+              <input type="number" id="restDeliveryCharge" placeholder="Delivery Charge ($)" step="0.01" required />
+              <input type="number" id="restRating" placeholder="Rating (0-5)" step="0.1" min="0" max="5" value="4.5" />
               <label>
                 <input type="checkbox" id="restIsOpen" checked /> Is Open
               </label>
@@ -78,11 +99,13 @@
               <input type="text" id="foodTitle" placeholder="Food Title" required />
               <input type="text" id="foodDescription" placeholder="Description" required />
               <input type="number" id="foodPrice" placeholder="Price" step="0.01" required />
+              <input type="text" id="foodImage" placeholder="Image URL" required />
               <select id="foodRestaurant" required>
                 <option value="">Select Restaurant</option>
               </select>
-              <input type="text" id="foodType" placeholder="Food Type (e.g., Vegetarian)" />
-              <input type="text" id="foodImageUrl" placeholder="Image URL" />
+              <select id="foodCategory" required>
+                <option value="">Select Category</option>
+              </select>
               <label>
                 <input type="checkbox" id="foodIsAvailable" checked /> Is Available
               </label>

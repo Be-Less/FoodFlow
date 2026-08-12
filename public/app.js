@@ -5,6 +5,7 @@ const state = {
   user: JSON.parse(localStorage.getItem('foodUser') || 'null'),
   restaurants: [],
   foods: [],
+  categories: [],
   selectedRestaurantId: '',
   cart: []
 };
@@ -27,6 +28,8 @@ const adminViewBtn = document.getElementById('adminViewBtn');
 const restaurantForm = document.getElementById('restaurantForm');
 const foodForm = document.getElementById('foodForm');
 const foodRestaurantSelect = document.getElementById('foodRestaurant');
+const foodCategorySelect = document.getElementById('foodCategory');
+const categoryForm = document.getElementById('categoryForm');
 
 function setStatus(message, isError = false) {
   statusMessage.textContent = message;
@@ -142,6 +145,16 @@ async function loadFoods() {
   }
 }
 
+async function loadCategories() {
+  try {
+    const data = await apiRequest(`${API}/category/getCategories`);
+    state.categories = data.categories || [];
+    populateCategoryDropdown();
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
 function setupTabs() {
   document.querySelectorAll('.tab').forEach((button) => {
     button.addEventListener('click', () => {
@@ -173,6 +186,7 @@ loginForm.addEventListener('submit', async (event) => {
     setStatus('Logged in successfully.');
     await loadRestaurants();
     await loadFoods();
+    await loadCategories();
   } catch (error) {
     setStatus(error.message, true);
   }
@@ -281,6 +295,8 @@ function switchView(view) {
     customerViewBtn.classList.remove('active');
     // Populate restaurant dropdown
     populateRestaurantDropdown();
+    // Populate category dropdown
+    populateCategoryDropdown();
   } else {
     contentPanel.classList.remove('hidden');
     adminSection.classList.add('hidden');
@@ -299,6 +315,16 @@ function populateRestaurantDropdown() {
   });
 }
 
+function populateCategoryDropdown() {
+  foodCategorySelect.innerHTML = '<option value="">Select Category</option>';
+  state.categories.forEach((category) => {
+    const option = document.createElement('option');
+    option.value = category._id;
+    option.textContent = category.title;
+    foodCategorySelect.appendChild(option);
+  });
+}
+
 customerViewBtn.addEventListener('click', () => switchView('customer'));
 adminViewBtn.addEventListener('click', () => switchView('admin'));
 
@@ -309,18 +335,41 @@ document.querySelectorAll('[data-admin-view]').forEach((button) => {
     document.querySelectorAll('[data-admin-view]').forEach((tab) => tab.classList.remove('active'));
     button.classList.add('active');
     const view = button.dataset.adminView;
+    categoryForm.classList.toggle('hidden', view !== 'category');
     restaurantForm.classList.toggle('hidden', view !== 'restaurant');
     foodForm.classList.toggle('hidden', view !== 'food');
   });
+});
+
+categoryForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const title = document.getElementById('categoryTitle').value;
+  const image = document.getElementById('categoryImage').value;
+
+  try {
+    const data = await apiRequest(`${API}/category/createCategory`, {
+      method: 'POST',
+      body: JSON.stringify({ title, image })
+    });
+
+    setStatus(`Category "${title}" created successfully!`);
+    categoryForm.reset();
+    await loadCategories();
+  } catch (error) {
+    setStatus(error.message, true);
+  }
 });
 
 restaurantForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   const title = document.getElementById('restTitle').value;
   const address = document.getElementById('restAddress').value;
+  const image = document.getElementById('restImage').value;
   const foodType = document.getElementById('restFoodType').value;
-  const imageUrl = document.getElementById('restImageUrl').value || '';
-  const deliveryTime = document.getElementById('restDeliveryTime').value || '30';
+  const time = document.getElementById('restTime').value;
+  const deliveryTime = document.getElementById('restDeliveryTime').value;
+  const deliveryCharge = parseFloat(document.getElementById('restDeliveryCharge').value);
+  const rating = parseFloat(document.getElementById('restRating').value) || 4.5;
   const isOpen = document.getElementById('restIsOpen').checked;
 
   try {
@@ -329,17 +378,19 @@ restaurantForm.addEventListener('submit', async (event) => {
       body: JSON.stringify({
         title,
         address,
+        image,
         foodType,
-        imageUrl,
-        deliveryTime: parseInt(deliveryTime),
-        isOpen,
-        rating: 4.5,
-        ratingCount: 0
+        time,
+        deliveryTime,
+        deliveryCharge,
+        rating,
+        isOpen
       })
     });
 
     setStatus(`Restaurant "${title}" created successfully!`);
     restaurantForm.reset();
+    document.getElementById('restRating').value = '4.5';
     await loadRestaurants();
     populateRestaurantDropdown();
   } catch (error) {
@@ -352,13 +403,18 @@ foodForm.addEventListener('submit', async (event) => {
   const title = document.getElementById('foodTitle').value;
   const description = document.getElementById('foodDescription').value;
   const price = parseFloat(document.getElementById('foodPrice').value);
+  const image = document.getElementById('foodImage').value;
   const restaurant = document.getElementById('foodRestaurant').value;
-  const foodType = document.getElementById('foodType').value || 'General';
-  const imageUrl = document.getElementById('foodImageUrl').value || '';
+  const category = document.getElementById('foodCategory').value;
   const isAvailable = document.getElementById('foodIsAvailable').checked;
 
   if (!restaurant) {
     setStatus('Please select a restaurant', true);
+    return;
+  }
+
+  if (!category) {
+    setStatus('Please select a category', true);
     return;
   }
 
@@ -369,15 +425,16 @@ foodForm.addEventListener('submit', async (event) => {
         title,
         description,
         price,
+        image,
         restaurant,
-        foodType,
-        imageUrl,
+        category,
         isAvailable
       })
     });
 
     setStatus(`Food item "${title}" created successfully!`);
     foodForm.reset();
+    document.getElementById('foodIsAvailable').checked = true;
     await loadFoods();
   } catch (error) {
     setStatus(error.message, true);
@@ -389,6 +446,7 @@ renderAuth();
 if (state.token && state.user) {
   loadRestaurants();
   loadFoods();
+  loadCategories();
   setStatus('Logged in. You can browse restaurants and place an order.');
 } else {
   setStatus('Please log in to view restaurants and order food.');
