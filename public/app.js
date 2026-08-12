@@ -304,7 +304,8 @@ adminViewBtn.addEventListener('click', () => switchView('admin'));
 
 // Admin tabs for restaurant/food creation
 document.querySelectorAll('[data-admin-view]').forEach((button) => {
-  button.addEventListener('click', () => {
+  button.addEventListener('click', (event) => {
+    event.preventDefault();
     document.querySelectorAll('[data-admin-view]').forEach((tab) => tab.classList.remove('active'));
     button.classList.add('active');
     const view = button.dataset.adminView;
