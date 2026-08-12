@@ -11,6 +11,7 @@ const state = {
 
 const authSection = document.getElementById('authSection');
 const userSection = document.getElementById('userSection');
+const adminSection = document.getElementById('adminSection');
 const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
 const userName = document.getElementById('userName');
@@ -20,6 +21,12 @@ const cartItems = document.getElementById('cartItems');
 const statusMessage = document.getElementById('statusMessage');
 const selectedRestaurantLabel = document.getElementById('selectedRestaurantLabel');
 const checkoutBtn = document.getElementById('checkoutBtn');
+const contentPanel = document.querySelector('.content-panel');
+const customerViewBtn = document.getElementById('customerViewBtn');
+const adminViewBtn = document.getElementById('adminViewBtn');
+const restaurantForm = document.getElementById('restaurantForm');
+const foodForm = document.getElementById('foodForm');
+const foodRestaurantSelect = document.getElementById('foodRestaurant');
 
 function setStatus(message, isError = false) {
   statusMessage.textContent = message;
@@ -32,9 +39,12 @@ function renderAuth() {
     authSection.classList.add('hidden');
     userSection.classList.remove('hidden');
     userName.textContent = `${state.user.username} (${state.user.email})`;
+    currentView = 'customer';
+    switchView('customer');
   } else {
     authSection.classList.remove('hidden');
     userSection.classList.add('hidden');
+    adminSection.classList.add('hidden');
   }
 }
 
@@ -255,6 +265,119 @@ checkoutBtn.addEventListener('click', async () => {
     setStatus(`Order placed successfully. Total: $${data.order.totalAmount}`);
     state.cart = [];
     renderCart();
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+});
+
+let currentView = 'customer'; // customer or admin
+
+function switchView(view) {
+  currentView = view;
+  if (view === 'admin') {
+    contentPanel.classList.add('hidden');
+    adminSection.classList.remove('hidden');
+    adminViewBtn.classList.add('active');
+    customerViewBtn.classList.remove('active');
+    // Populate restaurant dropdown
+    populateRestaurantDropdown();
+  } else {
+    contentPanel.classList.remove('hidden');
+    adminSection.classList.add('hidden');
+    customerViewBtn.classList.add('active');
+    adminViewBtn.classList.remove('active');
+  }
+}
+
+function populateRestaurantDropdown() {
+  foodRestaurantSelect.innerHTML = '<option value="">Select Restaurant</option>';
+  state.restaurants.forEach((restaurant) => {
+    const option = document.createElement('option');
+    option.value = restaurant._id;
+    option.textContent = restaurant.title;
+    foodRestaurantSelect.appendChild(option);
+  });
+}
+
+customerViewBtn.addEventListener('click', () => switchView('customer'));
+adminViewBtn.addEventListener('click', () => switchView('admin'));
+
+// Admin tabs for restaurant/food creation
+document.querySelectorAll('[data-admin-view]').forEach((button) => {
+  button.addEventListener('click', () => {
+    document.querySelectorAll('[data-admin-view]').forEach((tab) => tab.classList.remove('active'));
+    button.classList.add('active');
+    const view = button.dataset.adminView;
+    restaurantForm.classList.toggle('hidden', view !== 'restaurant');
+    foodForm.classList.toggle('hidden', view !== 'food');
+  });
+});
+
+restaurantForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const title = document.getElementById('restTitle').value;
+  const address = document.getElementById('restAddress').value;
+  const foodType = document.getElementById('restFoodType').value;
+  const imageUrl = document.getElementById('restImageUrl').value || '';
+  const deliveryTime = document.getElementById('restDeliveryTime').value || '30';
+  const isOpen = document.getElementById('restIsOpen').checked;
+
+  try {
+    const data = await apiRequest(`${API}/restaurant/createRestaurant`, {
+      method: 'POST',
+      body: JSON.stringify({
+        title,
+        address,
+        foodType,
+        imageUrl,
+        deliveryTime: parseInt(deliveryTime),
+        isOpen,
+        rating: 4.5,
+        ratingCount: 0
+      })
+    });
+
+    setStatus(`Restaurant "${title}" created successfully!`);
+    restaurantForm.reset();
+    await loadRestaurants();
+    populateRestaurantDropdown();
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+});
+
+foodForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const title = document.getElementById('foodTitle').value;
+  const description = document.getElementById('foodDescription').value;
+  const price = parseFloat(document.getElementById('foodPrice').value);
+  const restaurant = document.getElementById('foodRestaurant').value;
+  const foodType = document.getElementById('foodType').value || 'General';
+  const imageUrl = document.getElementById('foodImageUrl').value || '';
+  const isAvailable = document.getElementById('foodIsAvailable').checked;
+
+  if (!restaurant) {
+    setStatus('Please select a restaurant', true);
+    return;
+  }
+
+  try {
+    const data = await apiRequest(`${API}/food/createfood`, {
+      method: 'POST',
+      body: JSON.stringify({
+        title,
+        description,
+        price,
+        restaurant,
+        foodType,
+        imageUrl,
+        isAvailable
+      })
+    });
+
+    setStatus(`Food item "${title}" created successfully!`);
+    foodForm.reset();
+    await loadFoods();
   } catch (error) {
     setStatus(error.message, true);
   }

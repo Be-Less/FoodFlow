@@ -46,7 +46,48 @@
           <div id="userSection" class="hidden">
             <h2>Welcome</h2>
             <p id="userName"></p>
-            <button id="logoutBtn">Logout</button>
+            <div style="margin-top: 15px; display: flex; gap: 10px;">
+              <button id="customerViewBtn" class="tab active" style="flex: 1;">Customer</button>
+              <button id="adminViewBtn" class="tab" style="flex: 1;">Admin</button>
+            </div>
+            <button id="logoutBtn" style="width: 100%; margin-top: 10px;">Logout</button>
+          </div>
+
+          <div id="adminSection" class="hidden">
+            <h2>Admin Panel</h2>
+            <div class="tabs">
+              <button class="tab active" data-admin-view="restaurant">Create Restaurant</button>
+              <button class="tab" data-admin-view="food">Create Food</button>
+            </div>
+
+            <form id="restaurantForm" class="auth-form">
+              <h3>Add Restaurant</h3>
+              <input type="text" id="restTitle" placeholder="Restaurant Title" required />
+              <input type="text" id="restAddress" placeholder="Address" required />
+              <input type="text" id="restFoodType" placeholder="Food Type (e.g., Italian)" required />
+              <input type="text" id="restImageUrl" placeholder="Image URL" />
+              <input type="number" id="restDeliveryTime" placeholder="Delivery Time (minutes)" />
+              <label>
+                <input type="checkbox" id="restIsOpen" checked /> Is Open
+              </label>
+              <button type="submit">Create Restaurant</button>
+            </form>
+
+            <form id="foodForm" class="auth-form hidden">
+              <h3>Add Food Item</h3>
+              <input type="text" id="foodTitle" placeholder="Food Title" required />
+              <input type="text" id="foodDescription" placeholder="Description" required />
+              <input type="number" id="foodPrice" placeholder="Price" step="0.01" required />
+              <select id="foodRestaurant" required>
+                <option value="">Select Restaurant</option>
+              </select>
+              <input type="text" id="foodType" placeholder="Food Type (e.g., Vegetarian)" />
+              <input type="text" id="foodImageUrl" placeholder="Image URL" />
+              <label>
+                <input type="checkbox" id="foodIsAvailable" checked /> Is Available
+              </label>
+              <button type="submit">Create Food</button>
+            </form>
           </div>
         </section>
 
