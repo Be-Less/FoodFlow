@@ -1,0 +1,85 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --bg: #fff7ed;
+  --panel: #ffffff;
+  --accent: #f97316;
+  --accent-dark: #c2410c;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #fde68a;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  color: var(--text);
+}
+.app-shell { max-width: 1200px; margin: 0 auto; padding: 24px; }
+.hero {
+  background: linear-gradient(90deg, var(--accent) 0%, #fb923c 100%);
+  color: white;
+  padding: 28px;
+  border-radius: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 12px 30px rgba(249, 115, 22, 0.2);
+}
+.hero h1 { font-size: 2rem; margin: 0 0 8px; }
+.eyebrow { text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.8rem; opacity: 0.9; }
+.hero-copy { margin: 0; max-width: 700px; }
+.layout { display: grid; gap: 20px; grid-template-columns: 320px 1fr; }
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+.tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+.tab, button {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  cursor: pointer;
+  background: #f3f4f6;
+  color: var(--text);
+}
+.tab.active, button:hover { background: var(--accent); color: white; }
+.auth-form { display: flex; flex-direction: column; gap: 10px; }
+.auth-form input {
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+.hidden { display: none; }
+.status {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+.section-block { margin-bottom: 18px; }
+.section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.card-grid { display: grid; gap: 12px; }
+.card {
+  border: 1px solid #fce7c8;
+  border-radius: 16px;
+  padding: 12px;
+  background: #fffdf8;
+}
+.card h3, .card p { margin: 0 0 6px; }
+.card button { margin-top: 6px; }
+.cart-list { display: flex; flex-direction: column; gap: 8px; }
+.cart-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f9fafb;
+}
+.checkout-btn { width: 100%; margin-top: 10px; background: var(--accent); color: white; }
+.checkout-btn:hover { background: var(--accent-dark); }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+}

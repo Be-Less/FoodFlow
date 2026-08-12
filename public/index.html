@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Food App</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Food delivery made simple</p>
+          <h1>Browse restaurants, pick your favorites, and place an order.</h1>
+          <p class="hero-copy">
+            This frontend connects directly to your Node.js backend and gives you a quick way to test the full flow.
+          </p>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="panel auth-panel">
+          <div id="authSection">
+            <div class="tabs">
+              <button class="tab active" data-view="login">Login</button>
+              <button class="tab" data-view="register">Register</button>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+              <h2>Welcome back</h2>
+              <input type="email" id="loginEmail" placeholder="Email" required />
+              <input type="password" id="loginPassword" placeholder="Password" required />
+              <button type="submit">Login</button>
+            </form>
+
+            <form id="registerForm" class="auth-form hidden">
+              <h2>Create account</h2>
+              <input type="text" id="registerName" placeholder="Username" required />
+              <input type="email" id="registerEmail" placeholder="Email" required />
+              <input type="password" id="registerPassword" placeholder="Password" required />
+              <input type="tel" id="registerPhone" placeholder="Phone" required />
+              <button type="submit">Register</button>
+            </form>
+          </div>
+
+          <div id="userSection" class="hidden">
+            <h2>Welcome</h2>
+            <p id="userName"></p>
+            <button id="logoutBtn">Logout</button>
+          </div>
+        </section>
+
+        <section class="panel content-panel">
+          <div id="statusMessage" class="status">Please log in to view restaurants and order food.</div>
+
+          <section class="section-block">
+            <div class="section-head">
+              <h2>Restaurants</h2>
+            </div>
+            <div id="restaurantList" class="card-grid"></div>
+          </section>
+
+          <section class="section-block">
+            <div class="section-head">
+              <h2>Menu</h2>
+              <span id="selectedRestaurantLabel">Choose a restaurant</span>
+            </div>
+            <div id="foodList" class="card-grid"></div>
+          </section>
+
+          <section class="section-block">
+            <div class="section-head">
+              <h2>Cart</h2>
+            </div>
+            <div id="cartItems" class="cart-list"></div>
+            <button id="checkoutBtn" class="checkout-btn">Place order</button>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
